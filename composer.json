@@ -11,7 +11,8 @@
     "type": "project",
     "require": {
         "php": ">=7.2.0",
-        "ext-json": "*"
+        "ext-json": "*",
+        "ulrichsg/getopt-php": "^3.3"
     },
     "require-dev": {
         "phpunit/phpunit": "~8.5"
