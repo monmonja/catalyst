@@ -54,6 +54,7 @@ class User {
 
   /**
    * Create table on the db
+   * @param $connection
    * @todo pass in connection or statement
    *
    * The PostgreSQL table should contain at least these fields:
@@ -61,15 +62,24 @@ class User {
    *  - surname
    *  - email (email should be set to a UNIQUE index).
    */
-  public function createDbTable () {
+  public function createDbTable (\PDO $connection)
+  {
     // Script will iterate through the CSV rows and insert each record into a dedicated PostgreSQL
     //database into the table “users”
     $table = 'users';
+    $sql = /** @lang PostgreSQL */ <<<SQL
+CREATE TABLE IF NOT EXISTS $table (
+    id SERIAL PRIMARY KEY,
+    name varchar(45) NOT NULL,
+    username varchar(45) NOT NULL,
+    email varchar(45) NOT NULL UNIQUE
+);
+SQL;
 
     // The users database table will need to be created/rebuilt as part of the PHP script. This will be
-    //defined as a Command Line directive below
-    // drop table when exists?
+    // defined as a Command Line directive below
     // create table
+    $connection->exec($sql);
   }
 
 }

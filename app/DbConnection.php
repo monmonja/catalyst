@@ -24,4 +24,11 @@ class DbConnection {
       ]), $username, $password,
       [ PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING ]);
   }
+
+  public function getConnection () {
+    if (is_null($this->connection)) {
+      throw new Exception('No connection');
+    }
+    return $this->connection;
+  }
 }
