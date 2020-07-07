@@ -1,5 +1,7 @@
 <?php
 
+use App\DbConnection;
+use App\Models\User;
 use GetOpt\ArgumentException;
 use GetOpt\GetOpt;
 use GetOpt\Option;
@@ -34,22 +36,47 @@ $getOpt->addOptions([
 
 ]);
 
-try {
-  $getOpt->process();
-} catch (ArgumentException $exception) {
-  file_put_contents('php://stderr', $exception->getMessage() . PHP_EOL);
-  echo PHP_EOL . $getOpt->getHelpText();
+function showError ($message, $getOpt, $addHelp = false) {
+  file_put_contents('php://stderr', $message . PHP_EOL);
+  if ($addHelp) {
+    echo PHP_EOL . $getOpt->getHelpText();
+  }
   exit;
 }
 
+try {
+  $getOpt->process();
+} catch (ArgumentException $exception) {
+  showError($exception->getMessage(), $getOpt, true);
+}
+
+$databaseName = "catalyst";
 // show help and quit
 if ($getOpt->getOption('help')) {
   echo $getOpt->getHelpText();
   exit;
 } elseif ($getOpt->getOption('create_table')) {
-  $dbHost = $getOpt->getOption('h');
-  $dbUsername = $getOpt->getOption('u');
-  $dbPassword = $getOpt->getOption('p');
-  echo $dbHost;
-  exit;
+  $host = $getOpt->getOption('h');
+  $username = $getOpt->getOption('u');
+  $password = $getOpt->getOption('p');
+  if (is_null($getOpt->getOption('h')) ||
+    is_null($getOpt->getOption('u')) ||
+    is_null($getOpt->getOption('p'))
+  ) {
+    showError("Host, username and password are required", $getOpt, true);
+  }
+
+  $dbConnection = new DbConnection();
+  try {
+    $dbConnection->connect($host, $databaseName, $username, $password);
+    $user = new User();
+    $user->createDbTable($dbConnection->getConnection());
+    echo 'Create table done' . PHP_EOL ;
+    exit;
+  } catch (Exception $exception) {
+    showError("Error in create table " . $exception->getMessage(), $getOpt);
+    exit;
+  }
+} else {
+  // do import
 }
