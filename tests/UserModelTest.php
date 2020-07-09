@@ -6,13 +6,12 @@ use App\Models\User;
 use Exception;
 use PHPUnit\Framework\TestCase;
 
-class UserModelTest extends TestCase   {
+class UserModelTest extends AppBaseTestCase   {
 
   // make sure user table doesnt exists
   public function testDropTableNotExist () {
     try {
-      $dbConnection = new DbConnection();
-      $dbConnection->connect('localhost', 'catalyst', 'almond_local', 'yN44dAITJ97dL9JGq8bQ');
+      $dbConnection = $this->getDbConnection();
       $dbConnection->getConnection()->exec('drop table if exists users');
       $dbConnection->getConnection()->query('select * from users');
 
@@ -27,7 +26,7 @@ class UserModelTest extends TestCase   {
   public function testCreateDbTable () {
     try {
       $dbConnection = new DbConnection();
-      $dbConnection->connect('localhost', 'catalyst', 'almond_local', 'yN44dAITJ97dL9JGq8bQ');
+      $dbConnection = $this->getDbConnection();
       User::createDbTable($dbConnection->getConnection());
       $this->assertTrue(true);
     } catch (Exception $e) {
@@ -38,7 +37,7 @@ class UserModelTest extends TestCase   {
   public function testTableExist () {
     try {
       $dbConnection = new DbConnection();
-      $dbConnection->connect('localhost', 'catalyst', 'almond_local', 'yN44dAITJ97dL9JGq8bQ');
+      $dbConnection = $this->getDbConnection();
       if (User::checkIfTableExist($dbConnection->getConnection())) {
         $this->assertTrue(true);
       }
@@ -49,8 +48,7 @@ class UserModelTest extends TestCase   {
 
   public function testTableDoesntExist () {
     try {
-      $dbConnection = new DbConnection();
-      $dbConnection->connect('localhost', 'catalyst', 'almond_local', 'yN44dAITJ97dL9JGq8bQ');
+      $dbConnection = $this->getDbConnection();
       $dbConnection->getConnection()->exec('drop table if exists users');
       User::checkIfTableExist($dbConnection->getConnection());
     } catch (Exception $e) {

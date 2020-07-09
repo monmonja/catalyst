@@ -5,12 +5,11 @@ use App\DbConnection;
 use Exception;
 use PHPUnit\Framework\TestCase;
 
-class DbConnectionTest extends TestCase   {
+class DbConnectionTest extends AppBaseTestCase   {
 
   public function testConnectPass () {
     try {
-      $dbConnection = new DbConnection();
-      $dbConnection->connect('localhost', 'catalyst', 'almond_local', 'yN44dAITJ97dL9JGq8bQ');
+      $dbConnection = $this->getDbConnection();
       $this->assertTrue(true);
     } catch (Exception $e) {
       $this->assertTrue(false);
