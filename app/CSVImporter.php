@@ -34,9 +34,20 @@ class CSVImporter {
    * @param $csv
    * @return boolean
    */
-  private function validateCSV ($csv) {
+  public function validateCSV ($csv) {
+    $headerColumns = $this->mapHeaderColumns(array_shift($csv));
     // throw there is an invalid email
-    return true;
+    $data = array_map(function ($row) use ($headerColumns) {
+      return trim($row[$headerColumns['email']]);
+    }, $csv);
+    $invalidEmails = array_filter($data, function ($email) {
+      return !filter_var($email, FILTER_VALIDATE_EMAIL);
+    });
+    if (empty($invalidEmails)) {
+      return true;
+    } else{
+      throw new Exception('Invalid emails/: ' . implode(',', $invalidEmails));
+    }
   }
 
   /**
@@ -61,8 +72,10 @@ class CSVImporter {
    *    map of the columns
    */
   public function mapHeaderColumns (array $row) {
-    // manually create a map
-    return [];
+    $row = array_map(function ($item) {
+      return trim($item);
+    }, $row);
+    return array_flip($row);
   }
 
   /**
