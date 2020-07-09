@@ -79,4 +79,36 @@ class CSVImporterTest extends TestCase   {
     }
   }
 
+  public function testParseRow () {
+    try {
+      $headers = [
+        'name' => 0,
+        'surname' => 1,
+        'email' => 2
+      ];
+      $importer = new CSVImporter();
+      $user = $importer->parseRow(['kevin', 'Ruley','kevin.ruley@gmail.com'], $headers);
+
+      $this->assertEquals($user->getCleanEmail(), 'kevin.ruley@gmail.com') ;
+      $this->assertEquals($user->getCleanName(), 'Kevin') ;
+      $this->assertEquals($user->getCleanSurname(), 'Ruley') ;
+    } catch (Exception $e) {
+      $this->assertTrue(false);
+    }
+  }
+
+  public function testProcessCSV () {
+    try {
+      $importer = new CSVImporter();
+      $rows = $importer->processCSV([
+        ['name', 'surname', 'email'],
+        ['kevin', 'Ruley','kevin.ruley@gmail.com'],
+      ]);
+
+      $this->assertEquals(1, sizeof($rows));
+    } catch (Exception $e) {
+      $this->assertTrue(false);
+    }
+  }
+
 }

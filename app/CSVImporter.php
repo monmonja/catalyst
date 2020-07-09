@@ -33,6 +33,7 @@ class CSVImporter {
    * Check if the csv is totally valid
    * @param $csv
    * @return boolean
+   * @throws Exception
    */
   public function validateCSV ($csv) {
     $headerColumns = $this->mapHeaderColumns(array_shift($csv));
@@ -54,14 +55,21 @@ class CSVImporter {
    * Check if the csv is totally valid
    * @param $csv
    * @return array
+   * @throws Exception
    */
   public function processCSV ($csv) {
-    // extract the first row for the column name with mapHeaderColumns
-    // $headerColumns = $this->mapHeaderColumns([]);
+    if ($this->validateCSV($csv)) {
+      // extract the first row for the column name with mapHeaderColumns
+      $headerColumns = $this->mapHeaderColumns(array_shift($csv));
 
-    $dataModels = [];
-    // loop with parseRow, add all to $dataModels
-    return $dataModels;
+      $dataModels = [];
+      // loop with parseRow, add all to $dataModels
+      foreach ($csv as $row) {
+        array_push($dataModels, $this->parseRow($row, $headerColumns));
+      }
+      return $dataModels;
+    }
+    return [];
   }
 
   /**
@@ -81,16 +89,25 @@ class CSVImporter {
   /**
    * Parse every row of the csv file
    * @param array $row
+   * @param array $headerColumns
    * @return User
-   * @throws Exception
-   *   error when there are errors with the data
    */
-  public function parseRow (array $row) {
-    $user = new User();
+  public function parseRow (array $row, array $headerColumns) {
     // check with header map and set the field with the user model
+    $user = new User();
+    if (isset($headerColumns['email'])) {
+      $user->setEmail($row[$headerColumns['email']]);
+    }
+
+    if (isset($headerColumns['name'])) {
+      $user->setName($row[$headerColumns['name']]);
+    }
+
+    if (isset($headerColumns['surname'])) {
+      $user->setSurname($row[$headerColumns['surname']]);
+    }
     return $user;
   }
-
 
   /**
    * Insert the data to the database
