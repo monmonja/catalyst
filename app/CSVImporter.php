@@ -13,17 +13,34 @@ class CSVImporter {
    * @return array
    *  list of users
    */
-  public function readFileFromPath ($path) {
+  public function getCSVFromPath ($path) {
     // check if file exists
-      // get data from the file
+      // get csv from the file
+    // throw error when file doest exist
+  }
 
-      // extract the first row for the column name with mapHeaderColumns
-      // $headerColumns = $this->mapHeaderColumns([]);
+  /**
+   * Check if the csv is totally valid
+   * @param $path
+   * @return boolean
+   */
+  private function validateCSV ($csv) {
+    // throw there is an invalid email
+    return true;
+  }
 
-      $dataModels = [];
-      // loop with parseRow, add all to $dataModels
-      return $dataModels;
-    // throw error when file doest exist or when there is an invalid email
+  /**
+   * Check if the csv is totally valid
+   * @param $path
+   * @return array
+   */
+  public function processCSV ($csv) {
+    // extract the first row for the column name with mapHeaderColumns
+    // $headerColumns = $this->mapHeaderColumns([]);
+
+    $dataModels = [];
+    // loop with parseRow, add all to $dataModels
+    return $dataModels;
   }
 
   /**
