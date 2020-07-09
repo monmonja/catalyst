@@ -2,7 +2,7 @@
 namespace App;
 
 use App\Models\User;
-use PHPUnit\Exception;
+use Exception;
 
 class CSVImporter {
   /**
@@ -14,14 +14,24 @@ class CSVImporter {
    *  list of users
    */
   public function getCSVFromPath ($path) {
+    // if the passed file has / at start then assume its a full path
+    if (strpos('/', $path) !== 0) {
+      $path = __DIR__ . '/../' . $path;
+    }
+
     // check if file exists
+    if (file_exists($path)) {
       // get csv from the file
-    // throw error when file doest exist
+      return array_map('str_getcsv', file($path));
+    } else {
+      // throw error when file doest exist
+      throw new Exception('File doesnt exist');
+    }
   }
 
   /**
    * Check if the csv is totally valid
-   * @param $path
+   * @param $csv
    * @return boolean
    */
   private function validateCSV ($csv) {
@@ -31,7 +41,7 @@ class CSVImporter {
 
   /**
    * Check if the csv is totally valid
-   * @param $path
+   * @param $csv
    * @return array
    */
   public function processCSV ($csv) {
