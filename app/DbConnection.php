@@ -22,7 +22,7 @@ class DbConnection {
         'host=' . $host,
         'dbname=' . $db
       ]), $username, $password,
-      [ PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING ]);
+      [ PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION ]);
   }
 
   public function getConnection () {
