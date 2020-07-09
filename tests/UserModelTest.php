@@ -28,12 +28,33 @@ class UserModelTest extends TestCase   {
     try {
       $dbConnection = new DbConnection();
       $dbConnection->connect('localhost', 'catalyst', 'almond_local', 'yN44dAITJ97dL9JGq8bQ');
-      $user = new User();
-      $user->createDbTable($dbConnection->getConnection());
+      User::createDbTable($dbConnection->getConnection());
       $this->assertTrue(true);
     } catch (Exception $e) {
-      die($e->getMessage());
       $this->assertTrue(false);
+    }
+  }
+
+  public function testTableExist () {
+    try {
+      $dbConnection = new DbConnection();
+      $dbConnection->connect('localhost', 'catalyst', 'almond_local', 'yN44dAITJ97dL9JGq8bQ');
+      if (User::checkIfTableExist($dbConnection->getConnection())) {
+        $this->assertTrue(true);
+      }
+    } catch (Exception $e) {
+      $this->assertTrue(false);
+    }
+  }
+
+  public function testTableDoesntExist () {
+    try {
+      $dbConnection = new DbConnection();
+      $dbConnection->connect('localhost', 'catalyst', 'almond_local', 'yN44dAITJ97dL9JGq8bQ');
+      $dbConnection->getConnection()->exec('drop table if exists users');
+      User::checkIfTableExist($dbConnection->getConnection());
+    } catch (Exception $e) {
+      $this->assertTrue(true);
     }
   }
 

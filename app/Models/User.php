@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Exception;
+
 class User {
   /** @var string $name */
   protected $name;
@@ -33,14 +35,14 @@ class User {
   /**
    *  Name and surname field should be set to be capitalised e.g. from “john” to “John”
    */
-  private function getCleanName () {
+  public function getCleanName () {
      return ucfirst(strtolower(trim($this->name)));
   }
 
   /**
    *  Name and surname field should be set to be capitalised e.g. from “john” to “John”
    */
-  private function getCleanSurname () {
+  public function getCleanSurname () {
      return ucfirst(strtolower(trim($this->surname)));
   }
 
@@ -62,7 +64,7 @@ class User {
    *  - surname
    *  - email (email should be set to a UNIQUE index).
    */
-  public function createDbTable (\PDO $connection)
+  public static function createDbTable (\PDO $connection)
   {
     // Script will iterate through the CSV rows and insert each record into a dedicated PostgreSQL
     //database into the table “users”
@@ -71,7 +73,7 @@ class User {
 CREATE TABLE IF NOT EXISTS $table (
     id SERIAL PRIMARY KEY,
     name varchar(45) NOT NULL,
-    username varchar(45) NOT NULL,
+    surname varchar(45) NOT NULL,
     email varchar(45) NOT NULL UNIQUE
 );
 SQL;
@@ -80,6 +82,21 @@ SQL;
     // defined as a Command Line directive below
     // create table
     $connection->exec($sql);
+  }
+
+  /**
+   * Check if the user table exists
+   * @param \PDO $connection
+   * @return bool
+   * @throws Exception
+   */
+  public static function checkIfTableExist (\PDO $connection) {
+    try {
+      $connection->query('SELECT 1 FROM users LIMIT 1');
+      return true;
+    } catch (Exception $e) {
+      throw new Exception('Users table doesnt exist. Please run --create_table');
+    }
   }
 
 }
