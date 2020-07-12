@@ -6,6 +6,7 @@ use App\Models\User;
 use GetOpt\ArgumentException;
 use GetOpt\GetOpt;
 use GetOpt\Option;
+use Symfony\Component\Dotenv\Dotenv;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
@@ -52,7 +53,10 @@ try {
   showError($exception->getMessage(), $getOpt, true);
 }
 
-$databaseName = "catalyst";
+$dotenv = new Dotenv();
+$dotenv->load(__DIR__.'/.env');
+
+$databaseName = $_ENV['DB_NAME'];
 // show help and quit
 if ($getOpt->getOption('help')) {
   echo $getOpt->getHelpText();
