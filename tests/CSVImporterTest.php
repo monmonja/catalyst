@@ -2,10 +2,10 @@
 namespace Tests;
 
 use App\CSVImporter;
+use App\Models\User;
 use Exception;
-use PHPUnit\Framework\TestCase;
 
-class CSVImporterTest extends TestCase   {
+class CSVImporterTest extends AppBaseTestCase   {
 
   public function testGetCSVFromPathInvalidPath () {
     try {
@@ -106,6 +106,41 @@ class CSVImporterTest extends TestCase   {
       ]);
 
       $this->assertEquals(1, sizeof($rows));
+    } catch (Exception $e) {
+      $this->assertTrue(false);
+    }
+  }
+
+  public function testInsertAllToDBDryRun () {
+    try {
+      $dbConnection = $this->getDbConnection();
+      $dbConnection->getConnection()->exec('drop table if exists users');
+      User::createDbTable($dbConnection->getConnection());
+      $importer = new CSVImporter();
+      $rows = $importer->processCSV([
+        ['name', 'surname', 'email'],
+        ['kevin', 'Ruley','kevin.ruley@gmail.com'],
+      ]);
+      $importer->insertAllToDB($dbConnection->getConnection(),  $rows, true);
+      $this->assertTrue(true);
+    } catch (Exception $e) {
+      $this->assertTrue(false);
+    }
+  }
+
+  public function testInsertAllToDInsert () {
+    try {
+      $dbConnection = $this->getDbConnection();
+      $importer = new CSVImporter();
+      $rows = $importer->processCSV([
+        ['name', 'surname', 'email'],
+        ['kevin', 'Ruley','kevin.ruley@gmail.com'],
+      ]);
+      $importer->insertAllToDB($dbConnection->getConnection(),  $rows, false);
+
+      $statement = $dbConnection->getConnection()->query("select count(*) from users");
+      $dbRows = $statement->fetchColumn();
+      $this->assertEquals(1, $dbRows);
     } catch (Exception $e) {
       $this->assertTrue(false);
     }

@@ -3,6 +3,7 @@ namespace App;
 
 use App\Models\User;
 use Exception;
+use PDO;
 
 class CSVImporter {
   /**
@@ -111,12 +112,34 @@ class CSVImporter {
 
   /**
    * Insert the data to the database
+   * @param PDO $connection
    * @param array $data
+   * @param bool $dryRun
+   * @throws Exception
    */
-  public function insertAllToDB (array $data) {
-    // open connection
-    // prepare statement
-    // insert db
-    // close connection
+  public function insertAllToDB (PDO $connection, array $data, bool $dryRun = false) {
+    if (User::checkIfTableExist($connection)) {
+      try {
+        $connection->beginTransaction();
+        // prepare statement
+        $statement = $connection->prepare('INSERT INTO users (name, surname, email) VALUES (?, ?, ?)');
+
+        /** @var User $row */
+        // insert db
+        foreach ($data as $row) {
+          $statement->bindValue(1, $row->getCleanName(), PDO::PARAM_STR);
+          $statement->bindValue(2, $row->getCleanSurname(), PDO::PARAM_STR);
+          $statement->bindValue(3, $row->getCleanEmail(), PDO::PARAM_STR);
+          $statement->execute();
+        }
+
+        if (!$dryRun) {
+          $connection->commit();
+        }
+      } catch (Exception $e) {
+        throw new Exception($e->getMessage());
+      }
+
+    }
   }
 }
